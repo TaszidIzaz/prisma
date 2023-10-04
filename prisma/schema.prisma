@@ -10,104 +10,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model users {
-  id              BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  firstName      String      @db.VarChar(200)
-  lastName       String      @db.VarChar(200)
-  email          String      @db.VarChar(200)
-  mobile          String      @db.VarChar(200)
-  password       String      @db.VarChar(200)
-  otp            String      @db.VarChar(200)
-  created_at   DateTime   @default(now()) @db.Timestamp(0)
-  updated_at   DateTime   @default(now()) @db.Timestamp(0) @updatedAt
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  firstName  String   @db.VarChar(200)
+  lastName   String   @db.VarChar(200)
+  email      String   @unique @db.VarChar(200)
+  mobile     String   @db.VarChar(200)
+  password   String   @db.VarChar(200)
+  otp        String   @db.VarChar(200)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
-  categories categories[]
-  products products[]
-  customers customers[]
-  invoices invoices[]
+  categories       categories[]
+  products         products[]
+  customers        customers[]
+  invoices         invoices[]
   invoice_products invoice_products[]
-
-
 }
 
 model categories {
-  id              BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  name            String      @db.VarChar(200)
-  user_id          BigInt 
-  created_at   DateTime   @default(now()) @db.Timestamp(0)
-  updated_at   DateTime   @default(now()) @db.Timestamp(0) @updatedAt
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String   @db.VarChar(200)
+  user_id    BigInt
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
-  users           users             @relation(fields: [user_id], references: [id],  onDelete : Restrict, onUpdate: Cascade)
+  users    users      @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   products products[]
 }
 
 model products {
-  id              BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  name            String      @db.VarChar(200)
-  price           String      @db.VarChar(50)
-  unit            String      @db.VarChar(50)
-  discount_price  String      @db.VarChar(50)
-  img_url         String      @db.VarChar(200)
-  created_at      DateTime   @default(now()) @db.Timestamp(0)
-  updated_at      DateTime   @default(now()) @db.Timestamp(0) @updatedAt
-  categoryId      BigInt
-  user_id         BigInt 
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name           String   @db.VarChar(200)
+  price          String   @db.VarChar(50)
+  unit           String   @db.VarChar(50)
+  discount_price String   @db.VarChar(50)
+  img_url        String   @db.VarChar(200)
+  created_at     DateTime @default(now()) @db.Timestamp(0)
+  updated_at     DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  categoryId     BigInt
+  user_id        BigInt
 
-  users           users             @relation(fields: [user_id], references: [id], onDelete : Restrict, onUpdate: Cascade)
-  category        categories        @relation(fields: [categoryId], references: [id],onDelete : Restrict, onUpdate: Cascade)
+  users    users      @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  category categories @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   invoice_products invoice_products[]
-  
 }
 
-
-
 model customers {
-  id              BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  name            String      @db.VarChar(200)
-  email          String      @db.VarChar(200)
-  mobile          String      @db.VarChar(200)
-  created_at   DateTime   @default(now()) @db.Timestamp(0)
-  updated_at   DateTime   @default(now()) @db.Timestamp(0) @updatedAt
-  user_id          BigInt 
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String   @db.VarChar(200)
+  email      String   @db.VarChar(200)
+  mobile     String   @db.VarChar(200)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  user_id    BigInt
 
-  users           users             @relation(fields: [user_id], references: [id], onDelete : Restrict, onUpdate: Cascade)
-  
+  users users @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   invoices invoices[]
-  
 }
 
 model invoices {
-  id              BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  total           Float
-  discount       Float
-  vat             Float
-  payable         Float
-  customerId     BigInt
-  user_id          BigInt 
-  created_at   DateTime   @default(now()) @db.Timestamp(0)
-  updated_at   DateTime   @default(now()) @db.Timestamp(0) @updatedAt
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  total      Float
+  discount   Float
+  vat        Float
+  payable    Float
+  customerId BigInt
+  user_id    BigInt
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
-  users           users             @relation(fields: [user_id], references: [id], onDelete : Restrict, onUpdate: Cascade)
-  customer        customers         @relation(fields: [customerId], references: [id], onDelete : Restrict, onUpdate: Cascade)
-
+  users    users     @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  customer customers @relation(fields: [customerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   invoice_products invoice_products[]
 }
 
 model invoice_products {
-  id              BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  invoiceId       BigInt
-  productId       BigInt  
-  user_id          BigInt
-  qty             String      @db.VarChar(200)
-  sale_price      String      @db.VarChar(200)
-  created_at   DateTime   @default(now()) @db.Timestamp(0)
-  updated_at   DateTime   @default(now()) @db.Timestamp(0) @updatedAt
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  invoiceId  BigInt
+  productId  BigInt
+  user_id    BigInt
+  qty        String   @db.VarChar(200)
+  sale_price String   @db.VarChar(200)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
-  users           users             @relation(fields: [user_id], references: [id], onDelete : Restrict, onUpdate: Cascade)
-  invoice         invoices          @relation(fields: [invoiceId], references: [id], onDelete : Restrict, onUpdate: Cascade)
-  products         products          @relation(fields: [productId], references: [id], onDelete : Restrict, onUpdate: Cascade)
+  users    users    @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  invoice  invoices @relation(fields: [invoiceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 }
